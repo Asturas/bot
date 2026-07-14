@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم البوت 🤖</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card h3 {
+            color: #667eea;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .card h2 {
+            background: #667eea;
+            color: white;
+            padding: 20px;
+            margin: 0;
+            font-size: 1.3em;
+        }
+
+        .card-content {
+            padding: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table th {
+            background: #f5f5f5;
+            padding: 12px;
+            text-align: right;
+            border-bottom: 2px solid #ddd;
+            color: #333;
+            font-weight: 600;
+        }
+
+        table td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        table tr:hover {
+            background: #f9f9f9;
+        }
+
+        .rank {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #667eea;
+            color: white;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+        }
+
+        .rank.gold {
+            background: #ffd700;
+            color: #333;
+        }
+
+        .rank.silver {
+            background: #c0c0c0;
+            color: #333;
+        }
+
+        .rank.bronze {
+            background: #cd7f32;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            margin-right: 5px;
+        }
+
+        .badge.epic {
+            background: #a335ee;
+            color: white;
+        }
+
+        .badge.rare {
+            background: #0070dd;
+            color: white;
+        }
+
+        .badge.common {
+            background: #9d9d9d;
+            color: white;
+        }
+
+        .currency {
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🤖 لوحة تحكم البوت الاقتصادية</h1>
+            <p>نظام متقدم للإدارة والمراقبة</p>
+        </header>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>👥 إجمالي المستخدمين</h3>
+                <div class="number" id="totalUsers">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>💰 إجمالي الأموال</h3>
+                <div class="number currency" id="totalBalance">0 🏆</div>
+            </div>
+            <div class="stat-card">
+                <h3>📊 إجمالي المعاملات</h3>
+                <div class="number" id="totalTransactions">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>📈 الأسهم المتاحة</h3>
+                <div class="number" id="stockCount">0</div>
+            </div>
+        </div>
+
+        <div class="content-grid">
+            <div class="card">
+                <h2>🏆 أفضل 10 لاعبين</h2>
+                <div class="card-content">
+                    <div id="leaderboard" class="loading">
+                        <div class="spinner"></div>
+                        جاري التحميل...
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📈 الأسهم المتاحة</h2>
+                <div class="card-content">
+                    <div id="stocks" class="loading">
+                        <div class="spinner"></div>
+                        جاري التحميل...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+
+        async function loadDashboard() {
+            try {
+                // Load global stats
+                const statsRes = await fetch(`${API_URL}/stats/global`);
+                const stats = await statsRes.json();
+                document.getElementById('totalUsers').textContent = stats.totalUsers || 0;
+                document.getElementById('totalBalance').textContent = (stats.totalBalance || 0).toLocaleString() + ' 🏆';
+                document.getElementById('totalTransactions').textContent = stats.totalTransactions || 0;
+
+                // Load leaderboard
+                const leaderRes = await fetch(`${API_URL}/leaderboard`);
+                const leaders = await leaderRes.json();
+                displayLeaderboard(leaders);
+
+                // Load stocks
+                const stockRes = await fetch(`${API_URL}/stocks`);
+                const stocks = await stockRes.json();
+                document.getElementById('stockCount').textContent = stocks.length || 0;
+                displayStocks(stocks);
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+                showError('خطأ في تحميل البيانات');
+            }
+        }
+
+        function displayLeaderboard(users) {
+            let html = '<table>';
+            html += '<tr><th>#</th><th>اللاعب</th><th>الرصيد</th><th>البنك</th><th>الإجمالي</th></tr>';
+            
+            users.forEach((user, index) => {
+                const rankClass = index === 0 ? 'gold' : index === 1 ? 'silver' : index === 2 ? 'bronze' : '';
+                html += `<tr>`;
+                html += `<td><span class="rank ${rankClass}">${index + 1}</span></td>`;
+                html += `<td>${user.username || 'User'}</td>`;
+                html += `<td class="currency">${user.balance.toLocaleString()} 🏆</td>`;
+                html += `<td class="currency">${user.bank.toLocaleString()} 🏦</td>`;
+                html += `<td class="currency">${(user.balance + user.bank).toLocaleString()} 💎</td>`;
+                html += `</tr>`;
+            });
+            
+            html += '</table>';
+            document.getElementById('leaderboard').innerHTML = html;
+        }
+
+        function displayStocks(stocks) {
+            let html = '<table>';
+            html += '<tr><th>السهم</th><th>السعر الحالي</th><th>التغير</th><th>الحجم</th></tr>';
+            
+            stocks.forEach((stock) => {
+                const change = stock.changePercent >= 0 ? '📈' : '📉';
+                html += `<tr>`;
+                html += `<td>${stock.emoji} ${stock.name}</td>`;
+                html += `<td class="currency">${stock.currentPrice} 🏆</td>`;
+                html += `<td>${change} ${stock.changePercent.toFixed(2)}%</td>`;
+                html += `<td>${stock.volume}</td>`;
+                html += `</tr>`;
+            });
+            
+            html += '</table>';
+            document.getElementById('stocks').innerHTML = html;
+        }
+
+        function showError(message) {
+            const error = document.createElement('div');
+            error.className = 'error';
+            error.textContent = message;
+            document.body.insertBefore(error, document.querySelector('.container'));
+        }
+
+        // Refresh every 10 seconds
+        loadDashboard();
+        setInterval(loadDashboard, 10000);
+    </script>
+</body>
+</html>
